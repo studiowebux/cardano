@@ -20,9 +20,9 @@ export function create_cip27_mint(
   amount_to_lock = 849070,
 ) {
   const tx_builder = new TxBuilder.Builder()
-    .with_main_receiver_address(payment_address)
     .with_receiver_address(payment_address)
-    .with_nft_cost_in_lovelace(amount_to_lock.toString())
+    .with_sender_address(payment_address)
+    .with_nft_cost_in_lovelace(amount_to_lock)
     .with_utxos(utxos)
     .build();
 

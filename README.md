@@ -1,6 +1,6 @@
 <div align="center">
 
-<h2>Webux Cardano</h2>
+<h2>Cardano Libs</h2>
 
 <p>This library is specifically crafted for a particular use case.</p>
 
@@ -28,6 +28,7 @@
 - **Submit API Usage:** Utilizes Cardano Submit API for transaction submission.
 - **Utxo Fetching:** Retrieves UTXOs using Blockfrost API (Might bring back DB Sync query).
 - **Policy Creation:** Allows creating new policies.
+- **Send ADA:** Send a specified amount of ada to a recipient.
 
 ### TODO
 
@@ -35,18 +36,17 @@
 - [ ] Finish CIP-86. (https://cips.cardano.org/cip/CIP-86)
 - [ ] Receive UTXO from client wallet.
 - [ ] Configure cardano network (Currently the example are hardcoded).
-- [ ] Simplify, rename and JSDoc the whole codebase.
 - [ ] Simplify the CIP/JSON Metadata format and inputs.
 - [ ] Fix if possible the Multi Assets, Lock ADA and group to minimize locked ADA.
-- [ ] Rename the receiver_address variable to use something more intuitive.
-- [ ] Normalize number input and casting all at the same place
 - [ ] Document the wallet variables and where to use what
-- [ ] Normalize the asset_name (hex and standard) also with the blockfrost format,
-      the user can put a normal string and the code will adjust.
 - [ ] Add dummy check for the metadata (64 chars or less and required keys).
 - [ ] Readd the DB Sync query to get the UTXOs.
-- [ ] Test UTXOs received from the client.
-- [ ] Implement ApiError everywhere
+- [-] Simplify, rename and JSDoc the whole codebase.
+- [x] Normalize the asset_name (hex and standard) also with the blockfrost format,
+      the user can put a normal string and the code will adjust.
+- [x] Rename the receiver_address variable to use something more intuitive.
+- [x] Normalize number input and casting all at the same place
+- [x] Implement ApiError everywhere
 
 ---
 
@@ -145,6 +145,8 @@ Distributed under the MIT License. See LICENSE for more information.
         src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
         alt="Buy Me A Coffee"
         style="height: 30px !important; width: 105px !important"
+        height="30"
+        width="105"
 /></a>
 <b> | </b>
 <a href="https://webuxlab.com" target="_blank"
@@ -152,6 +154,7 @@ Distributed under the MIT License. See LICENSE for more information.
         src="https://webuxlab-static.s3.ca-central-1.amazonaws.com/logoAmpoule.svg"
         alt="Webux Logo"
         style="height: 30px !important"
+        height="30"
 /> Webux Lab</a>
 <b> | </b>
 </div>

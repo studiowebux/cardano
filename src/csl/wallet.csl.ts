@@ -7,6 +7,12 @@ import {
   type Ed25519KeyHash,
 } from "@emurgo/cardano-serialization-lib-nodejs";
 
+/**
+ * Creates a new Cardano wallet with Ed25519 key pair and generates addresses for different networks.
+ *
+ * @param {boolean} [save_locally=false] - If set to true, the wallet information will be saved locally as a JSON file with a timestamp.
+ * @returns {{ skey: string; skey_hex: string; pkey: string; pkey_hex: string; key_hash: string; address_preview: string; address_preprod: string; address_mainnet: string }}
+ */
 export function create_wallet(save_locally: boolean = false): {
   skey: string;
   skey_hex: string;
@@ -61,16 +67,34 @@ export function create_wallet(save_locally: boolean = false): {
   return wallet;
 }
 
+/**
+ * Retrieves the Ed25519 key hash from a given private key.
+ *
+ * @param {string} private_key - The Bech32 encoded private key.
+ * @returns {Ed25519KeyHash | undefined} The derived key hash, or undefined if invalid input.
+ */
 export function get_keyhash(private_key: string): Ed25519KeyHash | undefined {
   return Credential.from_keyhash(
     PrivateKey.from_bech32(private_key).to_public().hash(),
   ).to_keyhash();
 }
 
+/**
+ * Converts a hexadecimal address string to an {@link Address} object.
+ *
+ * @param {string} address - The hexadecimal encoded address.
+ * @returns {Address} The parsed address object.
+ */
 export function get_address(address: string): Address {
   return Address.from_hex(address);
 }
 
+/**
+ * Converts a Bech32 encoded private key string to a {@link PrivateKey} object.
+ *
+ * @param {string} secret_key - The Bech32 encoded private key.
+ * @returns {PrivateKey} The parsed private key object.
+ */
 export function get_private_key(secret_key: string): PrivateKey {
   return PrivateKey.from_bech32(secret_key);
 }

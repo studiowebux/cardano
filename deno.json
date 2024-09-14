@@ -11,5 +11,9 @@
     "types": [
       "@emurgo/cardano-serialization-lib-nodejs/cardano_serialization_lib.d.ts"
     ]
+  },
+  "publish": {
+    "include": ["LICENSE", "README.md", "src/**/*.ts"],
+    "exclude": ["__tests__/", ".github/", "example/"]
   }
 }

@@ -27,5 +27,3 @@ export async function submit_api(
   }
   return json_data;
 }
-
-// TODO: Blockfrost submit_api

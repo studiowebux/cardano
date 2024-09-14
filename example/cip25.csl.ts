@@ -10,9 +10,9 @@ import {
 } from "@studiowebux/cardano";
 
 export function create_cip25_mint(
+  sender_address: string,
   receiver_address: string,
-  main_receiver_address: string,
-  nft_cost_in_lovelace: string,
+  nft_cost_in_lovelace: number,
   assets: { metadata: CIP25Formatted; asset_name: string }[],
   mint_script: NativeScript,
   utxos: Utxo[],
@@ -23,9 +23,9 @@ export function create_cip25_mint(
 ) {
   const tx_builder = new TxBuilder.Builder()
     .with_hide_metadata(hide_metadata)
-    .with_main_receiver_address(main_receiver_address)
-    .with_nft_cost_in_lovelace(nft_cost_in_lovelace)
     .with_receiver_address(receiver_address)
+    .with_nft_cost_in_lovelace(nft_cost_in_lovelace)
+    .with_sender_address(sender_address)
     .with_utxos(utxos)
     .build();
 
@@ -83,6 +83,7 @@ export function create_cip25_burns_with_rewards_no_metadata(
   output_policy_skey: PrivateKey,
 ) {
   const tx_builder = new TxBuilder.Builder()
+    .with_sender_address(receiver_address)
     .with_receiver_address(receiver_address)
     .with_utxos(utxos)
     .build();
@@ -136,6 +137,7 @@ export function create_cip25_burn_with_metadata(
 ) {
   const tx_builder = new TxBuilder.Builder()
     .with_hide_metadata(hide_metadata)
+    .with_sender_address(receiver_address)
     .with_receiver_address(receiver_address)
     .with_utxos(utxos)
     .build();

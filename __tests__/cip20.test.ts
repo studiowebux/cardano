@@ -25,7 +25,8 @@ Deno.test("cip20 + cip86", () => {
     wallet.address_preprod,
     wallet.address_preprod,
     utxos,
-    "0",
+    0,
+    undefined,
     false,
   );
 

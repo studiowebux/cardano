@@ -4,7 +4,7 @@ import {
   create_policy_script,
   get_policy_id,
 } from "@studiowebux/cardano";
-import { encode_to_hex } from "../src/util/encode.ts";
+import { string_to_bytes } from "../src/util/encode.ts";
 
 export const wallet = {
   skey: "ed25519_sk186akh5e8hn9hg4dwrs278cxvzxt5380ug5y5vg9mkwr9cmg60m9sqs0edm",
@@ -50,7 +50,7 @@ export const utxos: Utxo[] = [
       {
         unit:
           get_policy_id(policy_script.mint_script) +
-          encode_to_hex("default_character").toString("hex"),
+          string_to_bytes("default_character").toString("hex"),
         quantity: "1",
       },
     ],

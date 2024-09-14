@@ -10,7 +10,7 @@ import {
   get_private_key,
 } from "@studiowebux/cardano";
 import { policy, utxos, wallet } from "./keys.ts";
-import { get_asset_name_v2 } from "../src/lib/assets_to_value.lib.ts";
+import { get_asset_name_v2 } from "../src/csl/assets_to_value.lib.ts";
 import { get_policy_id } from "../src/csl/policy.csl.ts";
 import { assertEquals } from "@std/assert";
 
@@ -44,7 +44,7 @@ Deno.test(
     const output = create_cip25_mint(
       wallet.address_preprod,
       wallet.address_preprod, // send nft on itself, usually it can be the target address.
-      (BigInt(2_000_000) * BigInt(1)).toString(),
+      2_000_000 * 1,
       [{ asset_name: "test_cip25", metadata: mint }],
       policy_script.mint_script,
       utxos,
@@ -67,7 +67,7 @@ Deno.test(
     const output = create_cip25_mint(
       wallet.address_preprod,
       wallet.address_preprod, // send nft on itself, usually it can be the target address.
-      (BigInt(2_000_000) * BigInt(1)).toString(),
+      2_000_000 * 1,
       [{ asset_name: "test_cip25", metadata: mint }],
       policy_script.mint_script,
       utxos,
@@ -88,7 +88,7 @@ Deno.test("Create CIP25 transaction minting 2 assets", () => {
   const output = create_cip25_mint(
     wallet.address_preprod,
     wallet.address_preprod, // send nft on itself, usually it can be the target address.
-    (BigInt(2_000_000) * BigInt(2)).toString(),
+    2_000_000 * 2,
     [
       { asset_name: "test_cip25", metadata: mint },
       { asset_name: "test_cip25_2", metadata: mint_2 },
