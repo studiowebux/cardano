@@ -16,4 +16,4 @@ jobs:
         with:
           deno-version: v1.x # Run with latest stable Deno.
       - name: Release to JSR
-        run: deno publish --allow-dirty
+        run: deno publish --allow-dirty --allow-slow-types
