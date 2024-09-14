@@ -16,7 +16,7 @@ Deno.test("Create CIP27 transaction", () => {
     format_cip27("0.05", wallet.address_preprod),
     policy_script.mint_script,
     utxos, // you should get the utxos from db sync, blockfrost or customer wallet.
-    "50000", // You have to get the current tip and add the number of slots desired
+    50000, // You have to get the current tip and add the number of slots desired
     get_private_key(policy.skey)!,
     get_private_key(wallet.skey)!,
     849070, // set minimum fee

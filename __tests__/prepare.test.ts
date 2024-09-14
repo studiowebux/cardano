@@ -4,7 +4,7 @@ const blockfrost_url = "http://192.168.20.105:3010";
 const blockfrost_api_key = "not_used";
 
 async function send_ada() {
-  const tx_builder = new TxBuilder.Builder()
+  const tx_builder = new TxBuilder()
     .with_receiver_address(
       "addr_test1qqu4ydw6df5y6sda5l3xljnmjqxvtsa0sjhw5swsjy6vele0sga4nc2my67vj32wu2hlk8vneau302az6j4y92nfwu0sw9zcd9",
     )
@@ -25,7 +25,7 @@ async function send_ada() {
   tx_builder
     .add_tx_metadata(["Sent using webux cardano tx builder"])
     .parse_utxos()
-    .set_ttl((tip_slot + 50_000).toString())
+    .set_ttl(tip_slot + 50_000)
     .add_output() // Send 5 ADA to receiver address
     .add_inputs()
     .build_body_and_hash()

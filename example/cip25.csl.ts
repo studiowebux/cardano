@@ -17,11 +17,11 @@ export function create_cip25_mint(
   mint_script: NativeScript,
   utxos: Utxo[],
   policy_ttl: number,
-  ttl: string,
+  ttl: number,
   policy_skey: PrivateKey,
   hide_metadata: boolean = true,
 ) {
-  const tx_builder = new TxBuilder.Builder()
+  const tx_builder = new TxBuilder()
     .with_hide_metadata(hide_metadata)
     .with_receiver_address(receiver_address)
     .with_nft_cost_in_lovelace(nft_cost_in_lovelace)
@@ -78,11 +78,11 @@ export function create_cip25_burns_with_rewards_no_metadata(
   output_mint_script: NativeScript,
   utxos: Utxo[],
   policy_ttl: number,
-  ttl: string,
+  ttl: number,
   input_policy_skey: PrivateKey,
   output_policy_skey: PrivateKey,
 ) {
-  const tx_builder = new TxBuilder.Builder()
+  const tx_builder = new TxBuilder()
     .with_sender_address(receiver_address)
     .with_receiver_address(receiver_address)
     .with_utxos(utxos)
@@ -130,12 +130,12 @@ export function create_cip25_burn_with_metadata(
   metadata: CIP25Formatted,
   utxos: Utxo[],
   policy_ttl: number,
-  ttl: string,
+  ttl: number,
   input_policy_skey: PrivateKey,
   output_policy_skey: PrivateKey,
   hide_metadata: boolean = true,
 ) {
-  const tx_builder = new TxBuilder.Builder()
+  const tx_builder = new TxBuilder()
     .with_hide_metadata(hide_metadata)
     .with_sender_address(receiver_address)
     .with_receiver_address(receiver_address)

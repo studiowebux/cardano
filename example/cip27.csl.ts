@@ -14,12 +14,12 @@ export function create_cip27_mint(
   metadata: CIP27Formatted,
   mint_script: NativeScript,
   utxos: Utxo[],
-  ttl: string,
+  ttl: number,
   policy_skey: PrivateKey,
   payment_skey: PrivateKey,
   amount_to_lock = 849070,
 ) {
-  const tx_builder = new TxBuilder.Builder()
+  const tx_builder = new TxBuilder()
     .with_receiver_address(payment_address)
     .with_sender_address(payment_address)
     .with_nft_cost_in_lovelace(amount_to_lock)

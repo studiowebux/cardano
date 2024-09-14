@@ -165,69 +165,69 @@ export class Submit {
   get_hash(): string {
     return this.hash;
   }
+}
+
+/**
+ * Builder class for creating instances of Submit.
+ *
+ * @export
+ * @class SubmitBuilder
+ */
+export class SubmitBuilder {
+  private transaction: string = "";
+  private signature: string = "";
+  private cardano_submit_api_base_url: string = "";
 
   /**
-   * Builder class for creating instances of Submit.
-   *
-   * @export
-   * @class Builder
+   * Creates an instance of Builder.
    */
-  public static Builder = class Builder {
-    private transaction: string = "";
-    private signature: string = "";
-    private cardano_submit_api_base_url: string = "";
+  constructor() {}
 
-    /**
-     * Creates an instance of Builder.
-     */
-    constructor() {}
+  /**
+   * Sets the transaction hex data.
+   *
+   * @param {string} transaction - The transaction hex data.
+   * @returns {SubmitBuilder} - This instance of SubmitBuilder.
+   */
+  with_transaction(transaction: string): SubmitBuilder {
+    this.transaction = transaction;
+    return this;
+  }
 
-    /**
-     * Sets the transaction hex data.
-     *
-     * @param {string} transaction - The transaction hex data.
-     * @returns {Builder} - This instance of Builder.
-     */
-    with_transaction(transaction: string): Builder {
-      this.transaction = transaction;
-      return this;
-    }
+  /**
+   * Sets the client signature in hex format.
+   *
+   * @param {string} signature - The client signature in hex format.
+   * @returns {SubmitBuilder} - This instance of SubmitBuilder.
+   */
+  with_signature(signature: string): SubmitBuilder {
+    this.signature = signature;
+    return this;
+  }
 
-    /**
-     * Sets the client signature in hex format.
-     *
-     * @param {string} signature - The client signature in hex format.
-     * @returns {Builder} - This instance of Builder.
-     */
-    with_signature(signature: string): Builder {
-      this.signature = signature;
-      return this;
-    }
+  /**
+   * Sets the base URL of the `cardano-submit-api` instance.
+   *
+   * @param {string} cardano_submit_api_base_url - The base URL of the `cardano-submit-api` instance.
+   * @returns {SubmitBuilder} - This instance of SubmitBuilder.
+   */
+  with_cardano_submit_api_base_url(
+    cardano_submit_api_base_url: string,
+  ): SubmitBuilder {
+    this.cardano_submit_api_base_url = cardano_submit_api_base_url;
+    return this;
+  }
 
-    /**
-     * Sets the base URL of the `cardano-submit-api` instance.
-     *
-     * @param {string} cardano_submit_api_base_url - The base URL of the `cardano-submit-api` instance.
-     * @returns {Builder} - This instance of Builder.
-     */
-    with_cardano_submit_api_base_url(
-      cardano_submit_api_base_url: string,
-    ): Builder {
-      this.cardano_submit_api_base_url = cardano_submit_api_base_url;
-      return this;
-    }
-
-    /**
-     * Builds an instance of Submit.
-     *
-     * @returns {Submit} - A new instance of Submit.
-     */
-    build(): Submit {
-      return new Submit(
-        this.transaction,
-        this.signature,
-        this.cardano_submit_api_base_url,
-      );
-    }
-  };
+  /**
+   * Builds an instance of Submit.
+   *
+   * @returns {Submit} - A new instance of Submit.
+   */
+  build(): Submit {
+    return new Submit(
+      this.transaction,
+      this.signature,
+      this.cardano_submit_api_base_url,
+    );
+  }
 }

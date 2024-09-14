@@ -3,7 +3,6 @@ import {
   get_asset_name_v2,
   get_keyhash,
   get_private_key,
-  TxBuilder,
   create_policy_script,
   get_policy_id,
 } from "@studiowebux/cardano";
@@ -11,6 +10,7 @@ import { utxos, wallet } from "./keys.ts";
 import { policy } from "./keys.ts";
 import { NetworkId } from "@emurgo/cardano-serialization-lib-nodejs";
 import { assertEquals } from "@std/assert";
+import { Tx } from "../src/csl/tx_builder.lib.ts";
 
 const policy_script = create_policy_script(get_keyhash(policy.skey)!, 0, false);
 
@@ -21,7 +21,7 @@ const mint = format_cip25(
 );
 
 Deno.test("cip20 + cip86", () => {
-  const tx_builder = new TxBuilder(
+  const tx_builder = new Tx(
     wallet.address_preprod,
     wallet.address_preprod,
     utxos,
@@ -47,7 +47,7 @@ Deno.test("cip20 + cip86", () => {
 
   tx_builder
     .parse_utxos()
-    .set_ttl("50000")
+    .set_ttl(50000)
     .add_inputs()
     .build_body_and_hash()
     .policy_witness([], [get_private_key(policy.skey)]) // FIXME: the cip-86 main address signature is missing.

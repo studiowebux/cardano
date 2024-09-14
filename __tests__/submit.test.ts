@@ -1,8 +1,8 @@
-import { Submit } from "@studiowebux/cardano";
+import { SubmitBuilder } from "@studiowebux/cardano";
 
 const cardano_submit_api_base_url = "http://192.168.20.105:8191";
 
-const submit = new Submit.Builder()
+const submit = new SubmitBuilder()
   .with_signature(
     "a100818258201d94ef303aeefff9964e4fa156d68e78b4570862a3875d15ca06b813d54641bc58404180685c121fa6e91b5bc73842346af574313e19b35c9923c066f885626e1aeb66b28935cde78a042e10e10f09b3fe36af7e053307a592008cf2e63222434804",
   )

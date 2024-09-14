@@ -49,7 +49,7 @@ Deno.test(
       policy_script.mint_script,
       utxos,
       policy_script.policy_ttl,
-      "50000",
+      50000,
       get_private_key(policy.skey)!,
       true,
     );
@@ -72,7 +72,7 @@ Deno.test(
       policy_script.mint_script,
       utxos,
       policy_script.policy_ttl,
-      "50000",
+      50000,
       get_private_key(policy.skey)!,
       true,
     );
@@ -96,7 +96,7 @@ Deno.test("Create CIP25 transaction minting 2 assets", () => {
     policy_script.mint_script,
     utxos,
     policy_script.policy_ttl,
-    "50000",
+    50000,
     get_private_key(policy.skey)!,
     true,
   );
@@ -128,7 +128,7 @@ Deno.test("create_cip25_burns_with_rewards_no_metadata", () => {
     policy_script.mint_script,
     utxos,
     0,
-    "50000",
+    50000,
     get_private_key(policy.skey)!,
     get_private_key(policy.skey)!,
   );
@@ -161,7 +161,7 @@ Deno.test("create_cip25_burn_with_metadata", () => {
     better_character,
     utxos,
     0,
-    "50000",
+    50000,
     get_private_key(policy.skey)!,
     get_private_key(policy.skey)!,
     true,
