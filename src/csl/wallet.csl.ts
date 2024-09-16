@@ -5,6 +5,9 @@ import {
   NetworkInfo,
   Address,
   type Ed25519KeyHash,
+  BaseAddress,
+  RewardAddress,
+  PublicKey,
 } from "@emurgo/cardano-serialization-lib-nodejs";
 
 /**
@@ -97,4 +100,61 @@ export function get_address(address: string): Address {
  */
 export function get_private_key(secret_key: string): PrivateKey {
   return PrivateKey.from_bech32(secret_key);
+}
+
+/**
+ * Retrieve from an address its stake key (if it has one)
+ *
+ * @param {string} address bech32 address
+ * @returns {string} bech32 stake address
+ */
+export function address_to_stake(address: string): string {
+  return RewardAddress.new(
+    NetworkInfo.mainnet().network_id(),
+    BaseAddress.from_address(Address.from_bech32(address))?.stake_cred()!,
+  )
+    .to_address()
+    .to_bech32();
+}
+
+/**
+ * Retrieves the public key from Ed25519 key hash.
+ * Needed to get the public key from the signatories in ogmios block.
+ *
+ * @param {string} keyhash - The keyhash saved in a transaction (Format: Ed25519_PK...)
+ * @returns {Ed25519KeyHash | undefined} The derived key hash, or undefined if invalid input.
+ */
+export function get_public_key_from_keyhash(
+  keyhash: string,
+): string | undefined {
+  return PublicKey.from_hex(keyhash).to_bech32();
+}
+
+/**
+ * From a bech32 address (with out without stake address)
+ * returns the public keyhash to validate if a tx is signed by the expected address
+ *
+ * @param {string} address the bech32 address (addr...)
+ * @returns {string} The Public key in bech32 format (Format: Ed25519_PK...)
+ */
+export function get_public_key_from_address(address: string): string {
+  try {
+    const enterprise_address = EnterpriseAddress.from_address(
+      Address.from_bech32(address),
+    );
+    return PublicKey.from_hex(
+      enterprise_address?.payment_cred().to_hex()!,
+    ).to_bech32();
+  } catch {
+    try {
+      const base_address = BaseAddress.from_address(
+        Address.from_bech32(address),
+      );
+      return PublicKey.from_hex(
+        base_address?.payment_cred().to_hex()!,
+      ).to_bech32();
+    } catch {
+      throw new Error("Tried both type of address without success.");
+    }
+  }
 }

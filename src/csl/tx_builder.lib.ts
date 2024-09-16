@@ -656,8 +656,8 @@ export class Tx {
    * for the provided policy, it will be overridden.
    *
    * @param {string} policy_id - The policy ID for which to assign the metadata oracle.
-   * @param {string} main_address - The address that will allow metadata updates.
-   * @param {string} update_address - The address responsible for updating the main address.
+   * @param {string} main_address - The address for updating the main address.
+   * @param {string} update_address - The address responsible to update metadata.
    *
    * @returns {this} - A reference to the current instance of the builder for method chaining.
    */
