@@ -11,3 +11,5 @@ export * from "./lib/cips.lib.ts";
 export * from "./lib/tip.api.ts";
 export * from "./lib/utxo.api.ts";
 export * from "./lib/submit.api.ts";
+
+export type * from "@emurgo/cardano-serialization-lib-nodejs";

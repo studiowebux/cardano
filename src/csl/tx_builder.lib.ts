@@ -569,15 +569,18 @@ export class Tx {
    *
    * If no `transaction_body` is provided, an error will be thrown. The method then sets the specified `network_id`.
    *
-   * @param {NetworkId | string} [id=NetworkId.testnet()] - The desired network ID to set (default: Testnet).
+   * @param {NetworkId | 0 | 1} [id=NetworkId.testnet()] - The desired network ID to set (default: Testnet). Testnet = 0, Mainnet = 1,
    *
    * @returns {this} - A reference to the current instance for method chaining.
    *
    * @throws {ApiError} - Throws an error if there's no transaction body available.
    */
-  set_network_id(id: NetworkId = NetworkId.testnet()): Tx {
+  set_network_id(id: NetworkId | 0 | 1 = NetworkId.testnet()): Tx {
     if (!this.body) {
       throw new ApiError("Missing transaction body.", "MISSING_TX_BODY", 409);
+    }
+    if (typeof id === "number") {
+      id = id === 0 ? NetworkId.testnet() : NetworkId.mainnet();
     }
     this.body.set_network_id(id);
     return this;
