@@ -10,7 +10,6 @@ import {
   get_private_key,
 } from "@studiowebux/cardano";
 import { policy, utxos, wallet } from "./keys.ts";
-import { get_asset_name_v2 } from "../src/csl/assets_to_value.lib.ts";
 import { get_policy_id } from "../src/csl/policy.csl.ts";
 import { assertEquals } from "@std/assert";
 
@@ -18,13 +17,13 @@ const policy_script = create_policy_script(get_keyhash(policy.skey)!, 0, false);
 
 const mint = format_cip25(
   { name: "test cip25", image: "http://localhost", mediaType: "image/png" },
-  get_asset_name_v2("test_cip25"),
+  "test_cip25",
   get_policy_id(policy_script.mint_script),
 );
 
 const mint_2 = format_cip25(
   { name: "test cip25 #2", image: "http://localhost", mediaType: "image/png" },
-  get_asset_name_v2("test_cip25_2"),
+  "test_cip25_2",
   get_policy_id(policy_script.mint_script),
 );
 
@@ -34,7 +33,7 @@ const better_character = format_cip25(
     image: "http://localhost",
     mediaType: "image/png",
   },
-  get_asset_name_v2("better_character"),
+  "better_character",
   get_policy_id(policy_script.mint_script),
 );
 

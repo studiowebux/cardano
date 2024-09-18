@@ -33,7 +33,7 @@ async function send_ada() {
     .build_tx()
     .assemble_tx();
 
-  console.log(tx_builder.get_assembled_tx()?.to_hex());
+  // console.log(tx_builder.get_assembled_tx()?.to_hex());
 }
 
 await send_ada();

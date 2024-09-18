@@ -1,4 +1,3 @@
-// @ts-types="@emurgo/cardano-serialization-lib-nodejs/cardano_serialization_lib.d.ts"
 import {
   BigNum,
   LinearFee,
