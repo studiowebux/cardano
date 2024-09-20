@@ -1,6 +1,6 @@
 {
   "name": "@studiowebux/cardano",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "exports": "./src/mod.ts",
   "imports": {
     "@emurgo/cardano-serialization-lib-nodejs": "npm:@emurgo/cardano-serialization-lib-nodejs@12.1.0",
