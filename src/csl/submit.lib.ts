@@ -102,9 +102,11 @@ export class Submit {
       .witness_set()
       .native_scripts();
 
-    this.client_vkeys = TransactionWitnessSet.from_bytes(
-      hex_to_bytes(this.signature),
-    ).vkeys();
+    if (this.signature) {
+      this.client_vkeys = TransactionWitnessSet.from_bytes(
+        hex_to_bytes(this.signature),
+      ).vkeys();
+    }
 
     this.witnesses = TransactionWitnessSet.new();
     const vkeyWitnesses = Vkeywitnesses.new();
