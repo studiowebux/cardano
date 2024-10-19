@@ -6,7 +6,6 @@ import {
   CoinSelectionStrategyCIP2,
   type Ed25519KeyHash,
   Ed25519KeyHashes,
-  hash_transaction,
   Int,
   make_vkey_witness,
   MultiAsset,
@@ -14,7 +13,6 @@ import {
   NativeScripts,
   NetworkId,
   type PrivateKey,
-  Transaction,
   type TransactionBody,
   TransactionBuilder,
   TransactionHash,
@@ -29,13 +27,14 @@ import {
   Vkeywitnesses,
   MetadataList,
   MetadataMap,
+  FixedTransaction,
 } from "@emurgo/cardano-serialization-lib-nodejs";
 
 import { txBuilderCfg } from "../config/tx_builder_config.csl.ts";
 import { assets_to_value } from "./assets_to_value.lib.ts";
 import type { CIP25Formatted, CIP27Formatted } from "../lib/cips.lib.ts";
 import type { Utxo } from "../type/blockfrost.type.ts";
-import { string_to_bytes } from "../util/encode.ts";
+import { string_to_uint8 } from "../util/encode.ts";
 import { ApiError } from "../util/error.ts";
 
 /**
@@ -68,9 +67,9 @@ export class Tx {
   private hash: TransactionHash | undefined;
 
   private witnesses: TransactionWitnessSet;
-  private unsigned_tx: Transaction | undefined; // raw tx to be signed
-  private assembled_tx: Transaction | undefined; // full tx (with metadata)
-  private tx_to_sign: Transaction | undefined; // tx with potentially removed metadata
+  private unsigned_tx: FixedTransaction | undefined; // raw tx to be signed
+  private assembled_tx: FixedTransaction | undefined; // full tx (with metadata)
+  private tx_to_sign: FixedTransaction | undefined; // tx with potentially removed metadata
 
   private hide_metadata: boolean;
 
@@ -140,20 +139,25 @@ export class Tx {
     return this.hash;
   }
 
-  get_unsigned_tx(): Transaction | undefined {
+  get_unsigned_tx(): FixedTransaction | undefined {
     return this.unsigned_tx;
   }
 
-  get_assembled_tx(): Transaction | undefined {
+  get_assembled_tx(): FixedTransaction | undefined {
     return this.assembled_tx;
   }
 
-  get_tx_to_sign(): Transaction | undefined {
+  get_tx_to_sign(): FixedTransaction | undefined {
+    if (!this.tx_to_sign) {
+      console.error(
+        "You might have forgot to call the remove_metadata method.",
+      );
+    }
     return this.tx_to_sign;
   }
 
   get_json(): string | undefined {
-    return this.assembled_tx?.to_json();
+    return this.assembled_tx?.body().to_json();
   }
 
   get_size(): number {
@@ -256,14 +260,14 @@ export class Tx {
       // Burn
       this.tx_builder.add_mint_asset(
         mint_script,
-        AssetName.new(string_to_bytes(asset_name)), // cip-25 v2
+        AssetName.new(string_to_uint8(asset_name)), // cip-25 v2
         Int.new_i32(quantity),
       );
     } else {
       // Mint
       this.tx_builder.add_mint_asset_and_output_min_required_coin(
         mint_script,
-        AssetName.new(string_to_bytes(asset_name)), // cip-25 v2
+        AssetName.new(string_to_uint8(asset_name)), // cip-25 v2
         Int.new_i32(quantity),
         TransactionOutputBuilder.new().with_address(address).next(),
       );
@@ -500,7 +504,9 @@ export class Tx {
    */
   build_body_and_hash(): Tx {
     this.body = this.tx_builder.build();
-    this.hash = hash_transaction(this.body);
+    this.hash = FixedTransaction.new_from_body_bytes(
+      this.body.to_bytes(),
+    ).transaction_hash();
 
     return this;
   }
@@ -594,7 +600,9 @@ export class Tx {
    * @returns {Tx} - The unsigned transaction object.
    */
   build_tx(): Tx {
-    this.unsigned_tx = this.tx_builder.build_tx();
+    this.unsigned_tx = FixedTransaction.from_hex(
+      this.tx_builder.build_tx().to_hex(),
+    );
     return this;
   }
 
@@ -616,11 +624,20 @@ export class Tx {
         409,
       );
     }
-    this.assembled_tx = Transaction.new(
-      this.unsigned_tx.body(),
-      this.witnesses,
-      this.unsigned_tx.auxiliary_data(),
-    );
+    if (this.unsigned_tx.auxiliary_data()) {
+      this.assembled_tx = FixedTransaction.new_with_auxiliary(
+        this.unsigned_tx.body().to_bytes(),
+        this.witnesses.to_bytes(),
+        this.unsigned_tx.auxiliary_data()!.to_bytes(),
+        true,
+      );
+    } else {
+      this.assembled_tx = FixedTransaction.new(
+        this.unsigned_tx.body().to_bytes(),
+        this.witnesses.to_bytes(),
+        true,
+      );
+    }
 
     return this;
   }
@@ -644,11 +661,26 @@ export class Tx {
         409,
       );
     }
-    this.tx_to_sign = Transaction.new(
-      this.unsigned_tx.body(),
-      this.witnesses,
-      this.hide_metadata ? undefined : this.unsigned_tx.auxiliary_data(),
-    );
+    if (this.hide_metadata || !this.unsigned_tx.auxiliary_data()) {
+      console.debug("Hide metadata");
+      this.tx_to_sign = FixedTransaction.new(
+        this.unsigned_tx.body().to_bytes(),
+        this.witnesses.to_bytes(),
+        true,
+      );
+      return this;
+    }
+
+    if (this.unsigned_tx.auxiliary_data()) {
+      // add metadata (not hidden)
+      this.tx_to_sign = FixedTransaction.new_with_auxiliary(
+        this.unsigned_tx.body().to_bytes(),
+        this.witnesses.to_bytes(),
+        this.unsigned_tx.auxiliary_data()!.to_bytes(),
+        true,
+      );
+    }
+
     return this;
   }
 

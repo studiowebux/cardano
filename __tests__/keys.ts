@@ -4,6 +4,7 @@ import {
   create_policy_script,
   get_policy_id,
 } from "@studiowebux/cardano";
+
 import { string_to_bytes } from "../src/util/encode.ts";
 
 export const wallet = {

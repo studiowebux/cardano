@@ -9,7 +9,7 @@ import {
 
 import { ApiError } from "../util/error.ts";
 import type { Asset } from "../type/blockfrost.type.ts";
-import { string_to_bytes, hex_to_bytes } from "../util/encode.ts";
+import { hex_to_uint8, string_to_uint8 } from "../util/encode.ts";
 
 /**
  * Converts a given MultiAsset instance and an array of assets into a Value object.
@@ -39,8 +39,8 @@ export function assets_to_value(
   }
   assets.forEach((asset) => {
     if (asset.unit !== "lovelace") {
-      const policy_hex = hex_to_bytes(asset.unit.slice(0, 56));
-      const asset_hex = hex_to_bytes(asset.unit.slice(56));
+      const policy_hex = hex_to_uint8(asset.unit.slice(0, 56));
+      const asset_hex = hex_to_uint8(asset.unit.slice(56));
 
       const asset_to_add = Assets.new();
       asset_to_add.insert(
@@ -67,5 +67,5 @@ export function assets_to_value(
  * @returns {string} The encoded asset name as a hexadecimal string.
  */
 export function get_asset_name_v2(asset_name: string): string {
-  return AssetName.new(string_to_bytes(asset_name)).to_hex();
+  return AssetName.new(string_to_uint8(asset_name)).to_hex();
 }

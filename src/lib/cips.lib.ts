@@ -1,5 +1,5 @@
 import { AssetName } from "@emurgo/cardano-serialization-lib-nodejs";
-import { Buffer } from "node:buffer";
+import { string_to_uint8 } from "../util/encode.ts";
 //
 // CIP27
 
@@ -36,7 +36,9 @@ export function format_cip25(
   asset_name: string,
   policy_id: string,
 ): CIP25Formatted {
-  const asset_name_encoded = AssetName.new(Buffer.from(asset_name)).to_hex();
+  const asset_name_encoded = AssetName.new(
+    string_to_uint8(asset_name),
+  ).to_hex();
   const formatted_metadata: CIP25Formatted = { "721": [] };
 
   formatted_metadata["721"] = [

@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <main>
+            Vanilla JS example
+            <div>Connecting: <span id="connecting">-</span></div>
+            <div>Wallet: <span id="name">-</span></div>
+            <div>Balance: <span id="balance">-</span></div>
+
+            <form id="wallet-selector">
+                <select name="wallet-key" value="" style="min-width: 100px">
+                    <option value="">Loading...</option>
+                </select>
+                <button type="submit">Connect</button>
+            </form>
+
+            <button id="disconnect">Disconnect</button>
+
+            <form id="sign-and-submit-form">
+                <input type="text" value="" id="tx" name="tx" />
+                <button type="submit" id="sign-and-submit-button">
+                    Sign and Submit
+                </button>
+            </form>
+        </main>
+
+        <script src="https://unpkg.com/@ada-anvil/weld@0.1.6/weld.iife.js"></script>
+        <script async>
+            console.log(Weld);
+            Weld.config.getState().update({
+                debug: true,
+                onUpdateError(context, error) {
+                    console.log("error", context, getFailureReason(error));
+                },
+                wallet: {
+                    // updateInterval: 2000,
+                },
+                extensions: {
+                    // updateInterval: false,
+                },
+            });
+
+            Weld.extensions.subscribeWithSelector(
+                (s) => s.allArr,
+                (extensions) => {
+                    const select = document.querySelector(
+                        "#wallet-selector select",
+                    );
+                    if (!(select instanceof HTMLSelectElement)) {
+                        return;
+                    }
+                    const options = [];
+                    for (const extension of extensions) {
+                        const option = document.createElement("option");
+                        option.value = extension.info.key;
+                        option.innerText = extension.info.displayName;
+                        options.push(option);
+                    }
+                    if (options.length === 0) {
+                        const option = document.createElement("option");
+                        option.value = "";
+                        option.innerText = "No wallets";
+                        options.push(option);
+                    }
+                    select.replaceChildren(...options);
+                },
+            );
+
+            Weld.wallet.subscribeWithSelector(
+                (state) => state.displayName ?? "-",
+                (displayName) => {
+                    // biome-ignore lint/style/noNonNullAssertion: We know the element exists
+                    document.querySelector("#name").textContent = displayName;
+                },
+            );
+
+            Weld.wallet.subscribeWithSelector(
+                (state) => state.balanceAda?.toFixed(2) ?? "-",
+                (balance) => {
+                    // biome-ignore lint/style/noNonNullAssertion: We know the element exists
+                    document.querySelector("#balance").textContent = balance;
+                },
+            );
+
+            Weld.wallet.subscribeWithSelector(
+                (state) => state.isConnectingTo ?? "-",
+                (isConnectingTo) => {
+                    // biome-ignore lint/style/noNonNullAssertion: We know the element exists
+                    document.querySelector("#connecting").textContent =
+                        isConnectingTo;
+                },
+            );
+
+            const form = document.querySelector("#wallet-selector");
+            if (form instanceof HTMLFormElement) {
+                form.addEventListener("submit", (event) => {
+                    event.preventDefault();
+                    const data = new FormData(form);
+                    const walletKey = data.get("wallet-key")?.toString();
+                    if (walletKey) {
+                        Weld.wallet.getState().connect(walletKey);
+                    }
+                });
+            }
+
+            document
+                .querySelector("#disconnect")
+                ?.addEventListener("click", () => {
+                    Weld.wallet.getState().disconnect();
+                });
+
+            const signAndSubmitForm = document.querySelector(
+                "#sign-and-submit-form",
+            );
+            if (signAndSubmitForm instanceof HTMLFormElement) {
+                signAndSubmitForm.addEventListener("submit", async (event) => {
+                    event.preventDefault();
+                    const data = new FormData(signAndSubmitForm);
+                    const tx = data.get("tx")?.toString();
+                    console.log("TX", tx);
+                    if (tx) {
+                        const signedTx = await Weld.wallet
+                            .getState()
+                            .handler?.signTx(tx, true);
+
+                        console.debug(signedTx);
+                    }
+                });
+            }
+
+            addEventListener("load", () => {
+                Weld.init();
+            });
+
+            addEventListener("unload", () => {
+                Weld.cleanup();
+            });
+        </script>
+    </body>
+</html>

@@ -7,7 +7,7 @@ import {
 
 import { ApiError } from "../util/error.ts";
 import { submit_api } from "../lib/submit.api.ts";
-import { hex_to_bytes } from "../util/encode.ts";
+import { hex_to_uint8 } from "../util/encode.ts";
 
 /**
  * Class for submitting Cardano transactions using the `cardano-submit-api`
@@ -104,7 +104,7 @@ export class Submit {
 
     if (this.signature) {
       this.client_vkeys = TransactionWitnessSet.from_bytes(
-        hex_to_bytes(this.signature),
+        hex_to_uint8(this.signature),
       ).vkeys();
     }
 
