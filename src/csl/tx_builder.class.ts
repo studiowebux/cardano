@@ -284,7 +284,7 @@ export class Tx {
   /**
    *  Add all minted/burned assets to one UTXO.
    */
-  apply_mint_builder() {
+  apply_mint_builder(): Tx {
     this.tx_builder.set_mint_builder(this.mint_builder);
     return this;
   }
@@ -292,7 +292,7 @@ export class Tx {
   /**
    * Simple Function to regroup all UTXOs into one utxo.
    */
-  set_inputs() {
+  set_inputs(): Tx {
     const inputs = TxInputsBuilder.new();
     for (const utxo of this.utxos) {
       inputs.add_key_input(
