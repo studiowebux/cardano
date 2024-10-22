@@ -7,10 +7,10 @@ import {
   get_private_key,
   create_policy_script,
   get_policy_id,
+  Tx,
 } from "@studiowebux/cardano";
 
 import { policy } from "./keys.ts";
-import { Tx } from "../src/csl/tx_builder.lib.ts";
 
 const policy_script = create_policy_script(get_keyhash(policy.skey)!, 0, false);
 

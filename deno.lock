@@ -4,7 +4,8 @@
     "jsr:@std/assert@*": "1.0.5",
     "jsr:@std/internal@^1.0.3": "1.0.3",
     "npm:@emurgo/cardano-serialization-lib-nodejs@13.1.0": "13.1.0",
-    "npm:@types/node@*": "18.16.19"
+    "npm:@types/node@*": "18.16.19",
+    "npm:postgres@^3.4.4": "3.4.4"
   },
   "jsr": {
     "@std/assert@1.0.5": {
@@ -23,12 +24,16 @@
     },
     "@types/node@18.16.19": {
       "integrity": "sha512-IXl7o+R9iti9eBW4Wg2hx1xQDig183jj7YLn8F7udNceyfkbn1ZxmzZXuak20gR40D7pIkIY1kYGx5VIGbaHKA=="
+    },
+    "postgres@3.4.4": {
+      "integrity": "sha512-IbyN+9KslkqcXa8AO9fxpk97PA4pzewvpi2B3Dwy9u4zpV32QicaEdgmF3eSQUzdRk7ttDHQejNgAEr4XoeH4A=="
     }
   },
   "workspace": {
     "dependencies": [
       "jsr:@std/assert@*",
-      "npm:@emurgo/cardano-serialization-lib-nodejs@13.1.0"
+      "npm:@emurgo/cardano-serialization-lib-nodejs@13.1.0",
+      "npm:postgres@^3.4.4"
     ]
   }
 }

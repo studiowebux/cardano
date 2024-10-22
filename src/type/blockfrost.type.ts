@@ -18,6 +18,9 @@ export type Tip = {
   confirmations: number;
 };
 
+/**
+ * Blockfrost Utxo
+ */
 export type Utxo = {
   address: string;
   tx_hash: string;

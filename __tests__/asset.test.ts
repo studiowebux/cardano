@@ -1,6 +1,6 @@
 import { assertEquals } from "@std/assert";
 import { AssetName } from "@emurgo/cardano-serialization-lib-nodejs";
-import { string_to_uint8, uint8_to_string } from "../src/util/encode.ts";
+import { string_to_uint8, uint8_to_string } from "@studiowebux/cardano";
 
 Deno.test("Asset name", () => {
   const asset_name = "my_character";

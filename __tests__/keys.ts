@@ -3,9 +3,8 @@ import {
   get_keyhash,
   create_policy_script,
   get_policy_id,
+  string_to_bytes,
 } from "@studiowebux/cardano";
-
-import { string_to_bytes } from "../src/util/encode.ts";
 
 export const wallet = {
   skey: "ed25519_sk186akh5e8hn9hg4dwrs278cxvzxt5380ug5y5vg9mkwr9cmg60m9sqs0edm",

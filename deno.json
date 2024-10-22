@@ -5,7 +5,8 @@
   "imports": {
     "@emurgo/cardano-serialization-lib-nodejs": "npm:@emurgo/cardano-serialization-lib-nodejs@13.1.0",
     "@studiowebux/cardano": "./src/mod.ts",
-    "@std/assert": "jsr:@std/assert"
+    "@std/assert": "jsr:@std/assert",
+    "postgresjs": "npm:postgres@^3.4.4"
   },
   "compilerOptions": {
     "types": [

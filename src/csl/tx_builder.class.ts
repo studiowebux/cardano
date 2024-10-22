@@ -19,7 +19,6 @@ import {
   TransactionInput,
   TransactionMetadatum,
   TransactionOutput,
-  TransactionOutputBuilder,
   TransactionUnspentOutput,
   TransactionUnspentOutputs,
   TransactionWitnessSet,
@@ -28,6 +27,10 @@ import {
   MetadataList,
   MetadataMap,
   FixedTransaction,
+  TxInputsBuilder,
+  MintBuilder,
+  MintWitness,
+  NativeScriptSource,
 } from "@emurgo/cardano-serialization-lib-nodejs";
 
 import { txBuilderCfg } from "../config/tx_builder_config.csl.ts";
@@ -73,6 +76,8 @@ export class Tx {
 
   private hide_metadata: boolean;
 
+  private mint_builder: MintBuilder;
+
   /**
    * Create a new instance of TxBuilder with optional parameters.
    *
@@ -117,6 +122,7 @@ export class Tx {
     this.parsed_utxos = TransactionUnspentOutputs.new();
 
     this.hide_metadata = hide_metadata;
+    this.mint_builder = MintBuilder.new();
   }
 
   get_utxos(): Utxo[] {
@@ -201,14 +207,19 @@ export class Tx {
       );
     }
 
+    console.log("utxos", this.utxos.length);
     this.utxos.forEach((utxo: Utxo) => {
       const multi_assets = MultiAsset.new();
       const { tx_hash, output_index, amount } = utxo;
 
+      // Check if we have enough lovelace
+      const lovelace =
+        amount.find((entry) => entry.unit === "lovelace")?.quantity || 0;
       if (
-        Number(amount[0].quantity) >
+        Number(lovelace) >
         Number(this.nft_cost_in_lovelace ?? this.ada_to_send ?? 0)
       ) {
+        // If we have enough utxos, we can proceed.
         this.parsed_utxos.add(
           TransactionUnspentOutput.new(
             TransactionInput.new(
@@ -256,22 +267,44 @@ export class Tx {
         409,
       );
     }
-    if (quantity < 0) {
-      // Burn
-      this.tx_builder.add_mint_asset(
-        mint_script,
-        AssetName.new(string_to_uint8(asset_name)), // cip-25 v2
-        Int.new_i32(quantity),
-      );
-    } else {
-      // Mint
-      this.tx_builder.add_mint_asset_and_output_min_required_coin(
-        mint_script,
-        AssetName.new(string_to_uint8(asset_name)), // cip-25 v2
-        Int.new_i32(quantity),
-        TransactionOutputBuilder.new().with_address(address).next(),
+
+    const mint_witness = MintWitness.new_native_script(
+      NativeScriptSource.new(mint_script),
+    );
+    // Mint or Burn asset
+    this.mint_builder.add_asset(
+      mint_witness,
+      AssetName.new(string_to_uint8(asset_name)), // cip-25 v2
+      Int.new_i32(quantity),
+    );
+
+    return this;
+  }
+
+  /**
+   *  Add all minted/burned assets to one UTXO.
+   */
+  apply_mint_builder() {
+    this.tx_builder.set_mint_builder(this.mint_builder);
+    return this;
+  }
+
+  /**
+   * Simple Function to regroup all UTXOs into one utxo.
+   */
+  set_inputs() {
+    const inputs = TxInputsBuilder.new();
+    for (const utxo of this.utxos) {
+      inputs.add_key_input(
+        this.get_sender_key_hash()!,
+        TransactionInput.new(
+          TransactionHash.from_hex(utxo.tx_hash),
+          utxo.output_index,
+        ),
+        assets_to_value(MultiAsset.new(), utxo.amount),
       );
     }
+    this.tx_builder.set_inputs(inputs);
 
     return this;
   }
@@ -327,6 +360,17 @@ export class Tx {
     override_receiver_address: Address | undefined = undefined,
     override_value: string | undefined = undefined,
   ): Tx {
+    if (
+      override_value === undefined &&
+      this.nft_cost_in_lovelace === undefined &&
+      this.ada_to_send === undefined
+    ) {
+      throw new ApiError(
+        "You must attach ADA to the transaction",
+        "MISSING_ADA",
+        409,
+      );
+    }
     if (!override_value && !this.receiver_address_as_address) {
       throw new ApiError(
         "Missing receiver address.",
@@ -334,6 +378,7 @@ export class Tx {
         409,
       );
     }
+
     this.tx_builder.add_output(
       TransactionOutput.new(
         override_receiver_address ?? this.receiver_address_as_address!,
@@ -486,7 +531,7 @@ export class Tx {
       );
     }
     this.tx_builder.add_inputs_from_and_change(
-      this.parsed_utxos,
+      this.get_parsed_utxos()!,
       CoinSelectionStrategyCIP2.LargestFirstMultiAsset,
       ChangeConfig.new(address),
     );
@@ -662,7 +707,6 @@ export class Tx {
       );
     }
     if (this.hide_metadata || !this.unsigned_tx.auxiliary_data()) {
-      console.debug("Hide metadata");
       this.tx_to_sign = FixedTransaction.new(
         this.unsigned_tx.body().to_bytes(),
         this.witnesses.to_bytes(),

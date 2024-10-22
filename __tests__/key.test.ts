@@ -2,8 +2,8 @@ import { assertEquals } from "@std/assert";
 import {
   get_public_key_from_address,
   get_public_key_from_keyhash,
-} from "../src/csl/wallet.csl.ts";
-import { address_to_stake } from "../src/csl/wallet.csl.ts";
+  address_to_stake,
+} from "@studiowebux/cardano";
 
 // NOTE: the addresses used below are from a random transaction
 

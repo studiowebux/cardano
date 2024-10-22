@@ -29,6 +29,7 @@ export function assets_to_value(
   multi_asset: MultiAsset,
   assets: Asset[],
 ): Value {
+  console.log("assets", assets);
   const qt = assets.find((asset) => asset.unit === "lovelace")?.quantity;
   if (!qt) {
     throw new ApiError(
@@ -37,24 +38,30 @@ export function assets_to_value(
       404,
     );
   }
+
+  const assets_to_add: Record<string, Assets> = {};
+
   assets.forEach((asset) => {
     if (asset.unit !== "lovelace") {
-      const policy_hex = hex_to_uint8(asset.unit.slice(0, 56));
+      const policy_hex = asset.unit.slice(0, 56);
       const asset_hex = hex_to_uint8(asset.unit.slice(56));
 
-      const asset_to_add = Assets.new();
-      asset_to_add.insert(
+      if (!assets_to_add[policy_hex]) {
+        assets_to_add[policy_hex] = Assets.new();
+      }
+
+      assets_to_add[policy_hex].insert(
         AssetName.new(asset_hex),
         BigNum.from_str(asset.quantity),
       );
-
-      multi_asset.insert(ScriptHash.from_bytes(policy_hex), asset_to_add);
     }
   });
 
-  const v = Value.new_from_assets(multi_asset);
-  v.set_coin(BigNum.from_str(qt));
-  return v;
+  for (const key of Object.keys(assets_to_add)) {
+    multi_asset.insert(ScriptHash.from_hex(key), assets_to_add[key]);
+  }
+
+  return Value.new_with_assets(BigNum.from_str(qt), multi_asset);
 }
 
 /**

@@ -1,8 +1,8 @@
 import {
   type NativeScripts,
-  Transaction,
   TransactionWitnessSet,
   Vkeywitnesses,
+  FixedTransaction,
 } from "@emurgo/cardano-serialization-lib-nodejs";
 
 import { ApiError } from "../util/error.ts";
@@ -53,9 +53,9 @@ export class Submit {
   /**
    * The assembled transaction.
    * @private
-   * @type {Transaction | undefined}
+   * @type {FixedTransaction | undefined}
    */
-  private assembled_tx: Transaction | undefined;
+  private assembled_tx: FixedTransaction | undefined;
 
   /**
    * The transaction hash after submission.
@@ -94,11 +94,11 @@ export class Submit {
     this.cardano_submit_api_base_url = cardano_submit_api_base_url;
     this.hash = "";
 
-    this.policy_vkeys = Transaction.from_hex(this.transaction)
+    this.policy_vkeys = FixedTransaction.from_hex(this.transaction)
       .witness_set()
       .vkeys();
 
-    this.native_scripts_vkeys = Transaction.from_hex(this.transaction)
+    this.native_scripts_vkeys = FixedTransaction.from_hex(this.transaction)
       .witness_set()
       .native_scripts();
 
@@ -134,11 +134,22 @@ export class Submit {
    * @returns {Submit} - This instance of Submit.
    */
   assemble_tx(): Submit {
-    this.assembled_tx = Transaction.new(
-      Transaction.from_hex(this.transaction).body(),
-      this.witnesses,
-      Transaction.from_hex(this.transaction).auxiliary_data(),
-    );
+    if (FixedTransaction.from_hex(this.transaction).auxiliary_data()) {
+      this.assembled_tx = FixedTransaction.new_with_auxiliary(
+        FixedTransaction.from_hex(this.transaction).body().to_bytes(),
+        this.witnesses.to_bytes(),
+        FixedTransaction.from_hex(this.transaction)
+          .auxiliary_data()!
+          .to_bytes(),
+        true,
+      );
+    } else {
+      this.assembled_tx = FixedTransaction.new(
+        FixedTransaction.from_hex(this.transaction).body().to_bytes(),
+        this.witnesses.to_bytes(),
+        true,
+      );
+    }
 
     return this;
   }
