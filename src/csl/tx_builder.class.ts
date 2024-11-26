@@ -207,7 +207,6 @@ export class Tx {
       );
     }
 
-    console.log("utxos", this.utxos.length);
     this.utxos.forEach((utxo: Utxo) => {
       const multi_assets = MultiAsset.new();
       const { tx_hash, output_index, amount } = utxo;
@@ -291,6 +290,8 @@ export class Tx {
 
   /**
    * Simple Function to regroup all UTXOs into one utxo.
+   * It allows to reduce the amount of utxos into only one utxo, potentially free up locked UTXO with tokens and etc.
+   * Use carefully to avoid emptying your wallet.
    */
   set_inputs(): Tx {
     const inputs = TxInputsBuilder.new();
@@ -573,6 +574,7 @@ export class Tx {
     if (!this.hash) {
       throw new ApiError("Missing transaction hash.", "MISSING_TX_HASH", 409);
     }
+
     const vkeyWitnesses = Vkeywitnesses.new();
     for (const policy_skey of policy_skeys) {
       vkeyWitnesses.add(make_vkey_witness(this.hash, policy_skey));

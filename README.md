@@ -29,10 +29,10 @@
 - **Utxo Fetching:** Retrieves UTXOs using Blockfrost API (Might bring back DB Sync query).
 - **Policy Creation:** Allows creating new policies.
 - **Send ADA:** Send a specified amount of ada to a recipient.
+- **CIP-8**. Expose a function and documentation to setup an authentication flow using cardano wallet.
 
 ### TODO
 
-- [ ] Integrate CIP-8. (https://cips.cardano.org/cip/CIP-8)
 - [ ] Finish CIP-86. (https://cips.cardano.org/cip/CIP-86)
 - [ ] Receive UTXO from client wallet.
 - [ ] Configure cardano network (Currently the example are hardcoded).
@@ -40,7 +40,7 @@
 - [ ] Fix if possible the Multi Assets, Lock ADA and group to minimize locked ADA.
 - [ ] Document the wallet variables and where to use what
 - [ ] Add dummy check for the metadata (64 chars or less and required keys).
-- [ ] Readd the DB Sync query to get the UTXOs.
+- [ ] Read the DB Sync query to get the UTXOs.
 - [-] Simplify, rename and JSDoc the whole codebase.
 - [x] Normalize the asset_name (hex and standard) also with the blockfrost format,
       the user can put a normal string and the code will adjust.

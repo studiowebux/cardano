@@ -16,4 +16,4 @@ export * from "./util/encode.ts";
 
 export * from "./db/postgres.ts";
 
-export type * from "@emurgo/cardano-serialization-lib-nodejs";
+export * from "@emurgo/cardano-serialization-lib-nodejs";

@@ -29,7 +29,6 @@ export function assets_to_value(
   multi_asset: MultiAsset,
   assets: Asset[],
 ): Value {
-  console.log("assets", assets);
   const qt = assets.find((asset) => asset.unit === "lovelace")?.quantity;
   if (!qt) {
     throw new ApiError(

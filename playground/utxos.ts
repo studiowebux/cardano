@@ -4,7 +4,7 @@ import {
   SubmitBuilder,
 } from "@studiowebux/cardano";
 
-import { DatabaseBuilder } from "../src/db/mod.ts";
+import { DatabaseBuilder } from "../src/db/postgres.ts";
 import { TxBuilder } from "../src/csl/tx_builder.class.ts";
 import { get_utxos_api } from "../src/lib/utxo.api.ts";
 

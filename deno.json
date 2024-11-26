@@ -1,9 +1,10 @@
 {
   "name": "@studiowebux/cardano",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "exports": "./src/mod.ts",
   "imports": {
-    "@emurgo/cardano-serialization-lib-nodejs": "npm:@emurgo/cardano-serialization-lib-nodejs@13.1.0",
+    "@emurgo/cardano-serialization-lib-nodejs": "npm:@emurgo/cardano-serialization-lib-nodejs@13.2.0",
+    "@emurgo/cardano-message-signing-nodejs": "npm:@emurgo/cardano-message-signing-nodejs@1.1.0",
     "@studiowebux/cardano": "./src/mod.ts",
     "@std/assert": "jsr:@std/assert",
     "postgresjs": "npm:postgres@^3.4.4"
@@ -15,6 +16,6 @@
   },
   "publish": {
     "include": ["LICENSE", "README.md", "src/**/*.ts"],
-    "exclude": ["__tests__/", ".github/", "example/"]
+    "exclude": ["__tests__/", ".github/", "example/", "playground/"]
   }
 }

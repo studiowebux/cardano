@@ -4,6 +4,7 @@ import {
   EnterpriseAddress,
   NetworkInfo,
 } from "@emurgo/cardano-serialization-lib-nodejs";
+import { assertEquals } from "@std/assert";
 
 Deno.test("Testing vkey operations", () => {
   // Key used to sign the TX
