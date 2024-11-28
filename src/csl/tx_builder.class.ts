@@ -62,7 +62,7 @@ export class Tx {
 
   private parsed_utxos: TransactionUnspentOutputs;
 
-  private utxos: Utxo[];
+  private utxos: Utxo[] | string[];
   private nft_cost_in_lovelace: number | undefined = undefined;
   private ada_to_send: number | undefined = undefined;
 
@@ -91,7 +91,7 @@ export class Tx {
   constructor(
     sender_address: string,
     receiver_address: string,
-    utxos: Utxo[],
+    utxos: Utxo[] | string[],
     nft_cost_in_lovelace: number | undefined,
     ada_to_send: number | undefined,
     hide_metadata: boolean,
@@ -125,7 +125,7 @@ export class Tx {
     this.mint_builder = MintBuilder.new();
   }
 
-  get_utxos(): Utxo[] {
+  get_utxos(): Utxo[] | string[] {
     return this.utxos;
   }
 
@@ -207,32 +207,40 @@ export class Tx {
       );
     }
 
-    this.utxos.forEach((utxo: Utxo) => {
-      const multi_assets = MultiAsset.new();
-      const { tx_hash, output_index, amount } = utxo;
-
-      // Check if we have enough lovelace
-      const lovelace =
-        amount.find((entry) => entry.unit === "lovelace")?.quantity || 0;
-      if (
-        Number(lovelace) >
-        Number(this.nft_cost_in_lovelace ?? this.ada_to_send ?? 0)
-      ) {
-        // If we have enough utxos, we can proceed.
+    if (typeof this.utxos[0] === "string") {
+      this.utxos.forEach((utxo) => {
         this.parsed_utxos.add(
-          TransactionUnspentOutput.new(
-            TransactionInput.new(
-              TransactionHash.from_hex(tx_hash),
-              output_index,
-            ),
-            TransactionOutput.new(
-              address,
-              assets_to_value(multi_assets, amount),
-            ),
-          ),
+          TransactionUnspentOutput.from_hex(utxo as string),
         );
-      }
-    });
+      });
+    } else {
+      this.utxos.forEach((utxo) => {
+        const multi_assets = MultiAsset.new();
+        const { tx_hash, output_index, amount } = utxo as Utxo;
+
+        // Check if we have enough lovelace
+        const lovelace =
+          amount.find((entry) => entry.unit === "lovelace")?.quantity || 0;
+        if (
+          Number(lovelace) >
+          Number(this.nft_cost_in_lovelace ?? this.ada_to_send ?? 0)
+        ) {
+          // If we have enough utxos, we can proceed.
+          this.parsed_utxos.add(
+            TransactionUnspentOutput.new(
+              TransactionInput.new(
+                TransactionHash.from_hex(tx_hash),
+                output_index,
+              ),
+              TransactionOutput.new(
+                address,
+                assets_to_value(multi_assets, amount),
+              ),
+            ),
+          );
+        }
+      });
+    }
 
     return this;
   }
@@ -295,16 +303,36 @@ export class Tx {
    */
   set_inputs(): Tx {
     const inputs = TxInputsBuilder.new();
-    for (const utxo of this.utxos) {
+    for (let i = 0; i < this.parsed_utxos.len(); i++) {
+      const utxo = this.parsed_utxos.get(i);
       inputs.add_key_input(
         this.get_sender_key_hash()!,
-        TransactionInput.new(
-          TransactionHash.from_hex(utxo.tx_hash),
-          utxo.output_index,
-        ),
-        assets_to_value(MultiAsset.new(), utxo.amount),
+        utxo.input(),
+        utxo.output().amount(),
       );
     }
+    // for (const utxo of this.parsed_utxos.len()) {
+    //   if (typeof utxo === "string") {
+    //     inputs.add_key_input(
+    //       this.get_sender_key_hash()!,
+    //       this.parsed_utxos
+    //       TransactionInput.new(
+    //         TransactionHash.from_hex(utxo.tx_hash),
+    //         utxo.output_index,
+    //       ),
+    //       assets_to_value(MultiAsset.new(), utxo.amount),
+    //     );
+    //   } else {
+    //     inputs.add_key_input(
+    //       this.get_sender_key_hash()!,
+    //       TransactionInput.new(
+    //         TransactionHash.from_hex(utxo.tx_hash),
+    //         utxo.output_index,
+    //       ),
+    //       assets_to_value(MultiAsset.new(), utxo.amount),
+    //     );
+    //   }
+    // }
     this.tx_builder.set_inputs(inputs);
 
     return this;
@@ -806,7 +834,7 @@ export class Tx {
 export class TxBuilder {
   private sender_address: string = "";
   private receiver_address: string = "";
-  private utxos: Utxo[] = [];
+  private utxos: Utxo[] | string[] = [];
   private nft_cost_in_lovelace: number | undefined = undefined;
   private ada_to_send: number | undefined = undefined;
   private hide_metadata: boolean = false;
@@ -841,7 +869,7 @@ export class TxBuilder {
    * @param {Utxo[]} utxos - An array of unspent transaction outputs (UTxOs).
    * @returns {TxBuilder}
    */
-  with_utxos(utxos: Utxo[]): TxBuilder {
+  with_utxos(utxos: Utxo[] | string[]): TxBuilder {
     this.utxos = utxos;
     return this;
   }

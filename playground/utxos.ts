@@ -50,7 +50,7 @@ Deno.test.ignore("Get UTXOs from DB Sync", async () => {
     .build()
     .parse_utxos()
     .set_ttl(tip_slot)
-    .set_inputs() // to geet all inputs and put them under ONE utxo
+    .set_inputs() // to get all inputs and put them under ONE utxo
     .add_inputs()
     .build_body_and_hash()
     .add_signers()
